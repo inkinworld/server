@@ -1087,12 +1087,16 @@ BackendInputCollector::FlushPendingPinned(
             async_task_count_++;
           }
         }
+        // overloading completion queue as barrier for checking whether
+        // the bundled task is processed
+        completion_queue_.Put(true);
       );
 
       // Sync previous async tasks if any. This sync is require because the
       // below CPU-PINNED to GPU copy.
       // FIXME: Can the CPU-PINNED to GPU copy be deferred to Finalize() and
       // remove this sync?
+      completion_queue_.Get();
       for (size_t i = 0; i < async_task_count_; i++) {
         completion_queue_.Get();
       }
