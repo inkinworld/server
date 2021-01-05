@@ -1086,10 +1086,10 @@ BackendInputCollector::FlushPendingPinned(
             pending_it = end_it;
             async_task_count_++;
           }
+          // overloading completion queue as barrier for checking whether
+          // the bundled task is processed
+          completion_queue_.Put(true);
         }
-        // overloading completion queue as barrier for checking whether
-        // the bundled task is processed
-        completion_queue_.Put(true);
       );
 
       // Sync previous async tasks if any. This sync is require because the
